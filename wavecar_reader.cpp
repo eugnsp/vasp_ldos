@@ -57,9 +57,9 @@ Vec3<double> operator+(Vec3<double> x, const Vec3<double>& y)
 }
 
 template<typename T>
-std::make_signed_t<T> index_shift(T i, T i_max)
+typename std::make_signed<T>::type index_shift(T i, T i_max)
 {
-	using T_s = std::make_signed_t<T>;
+	using T_s = typename std::make_signed<T>::type;
 
 	const auto i_max_s = static_cast<T_s>(i_max);
 	auto index = static_cast<T_s>(i);
@@ -71,11 +71,8 @@ std::make_signed_t<T> index_shift(T i, T i_max)
 }
 
 Wavecar_reader::Wavecar_reader(const std::string& filename)
+	: File_reader(filename, File_type::BINARY)
 {
-	file_.open(filename, std::ifstream::binary);
-	if (!file_)
-		throw std::runtime_error("File '" + filename + "' not found");
-
 	file_.exceptions(std::ifstream::badbit | std::ifstream::failbit);
 
 	read_header();
@@ -163,7 +160,7 @@ void Wavecar_reader::get_kpoint_data(
 {
 	assert(spin < n_spins_);
 	assert(kpoint < n_kpoints_);
-	assert(is_single_precision() == (std::is_same_v<T, float>));
+	assert(is_single_precision() == (std::is_same<T, float>::value));
 	
 	data.energies.resize(n_bands_);
 	data.occupations.resize(n_bands_);
@@ -180,7 +177,7 @@ void Wavecar_reader::get_kpoint_data(
 	for (std::size_t i = 0; i < n_bands_; ++i)
 	{
 		read(data.energies[i]);
-		skip<double>();		// Skip the energy imaginary part, should be zero
+		file_.ignore(8);				// Skip the energy imaginary part, should be zero
 		read(data.occupations[i]);
 	}
 
@@ -245,9 +242,9 @@ void Wavecar_reader::compute_reciprocal()
 	b1_ = 2 * PI / uc_volume * cross(a2_, a0_);
 	b2_ = 2 * PI / uc_volume * cross(a0_, a1_);
 
-	// NB: for oblique unit cell (i_m) is not (Gm / |b_i|), but (Gm * |a_i| / 2pi)
-
 	const double g_max_over_2pi = std::sqrt(TWO_M_OVER_HBAR_SQ * e_cut_) / (2 * PI);
+
+	// NB: for oblique unit cell (i_m) is not (Gm / |b_i|), but (Gm * |a_i| / 2pi)
 	max_g0_ = static_cast<std::size_t>(std::floor(g_max_over_2pi * a0_norm())) + 1;
 	max_g1_ = static_cast<std::size_t>(std::floor(g_max_over_2pi * a1_norm())) + 1;
 	max_g2_ = static_cast<std::size_t>(std::floor(g_max_over_2pi * a2_norm())) + 1;
@@ -281,25 +278,7 @@ void Wavecar_reader::compute_g_lattice(
 
 void Wavecar_reader::seek_record(std::size_t n) const
 {
-	file_.seekg(static_cast<unsigned long long>(n) * record_length_, std::ios::beg);
-}
-
-template<typename T>
-void Wavecar_reader::skip() const
-{
-	file_.ignore(sizeof(T));
-}
-
-template<typename T>
-void Wavecar_reader::read(T& x) const
-{
-	file_.read(reinterpret_cast<char*>(&x), sizeof(T));
-}
-
-template<typename T>
-void Wavecar_reader::read(T* x, std::size_t n_elements) const
-{
-	file_.read(reinterpret_cast<char*>(x), sizeof(T) * n_elements);
+	file_.seekg(static_cast<unsigned long long>(n) * record_length_);
 }
 
 std::size_t Wavecar_reader::to_positive_sizet(double x)

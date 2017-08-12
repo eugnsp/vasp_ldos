@@ -10,7 +10,7 @@
 template<typename T>
 class Fft
 {
-	static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>,
+	static_assert(std::is_same<T, float>::value || std::is_same<T, double>::value,
 				  "Bad data type");
 
 public:
@@ -44,7 +44,7 @@ Fft<T>::Fft(std::size_t size, std::size_t n_transforms, std::complex<T>* data)
 	assert(n_transforms > 0);
 
 	auto status = DftiCreateDescriptor(
-		&handle_, (std::is_same_v<T, float>) ? DFTI_SINGLE : DFTI_DOUBLE,
+		&handle_, (std::is_same<T, float>::value) ? DFTI_SINGLE : DFTI_DOUBLE,
 		DFTI_COMPLEX, 1, size);
 
 	check_status(status);

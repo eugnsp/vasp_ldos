@@ -152,14 +152,17 @@
     <ClCompile Include="command_line.cpp" />
     <ClCompile Include="ldos.cpp" />
     <ClCompile Include="ldos_writer.cpp" />
+    <ClCompile Include="outcar_reader.cpp" />
     <ClCompile Include="wavecar_reader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="command_line.hpp" />
     <ClInclude Include="fft_fftw.hpp" />
     <ClInclude Include="fft_mkl.hpp" />
+    <ClInclude Include="file_reader.hpp" />
     <ClInclude Include="ldos_writer.hpp" />
     <ClInclude Include="matrix.hpp" />
+    <ClInclude Include="outcar_reader.hpp" />
     <ClInclude Include="wavecar_reader.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

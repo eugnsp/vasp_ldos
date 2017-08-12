@@ -1,11 +1,11 @@
 #pragma once
 #include "matrix.hpp"
+#include "file_reader.hpp"
 #include <cstddef>
 #include <complex>
 #include <array>
 #include <vector>
 #include <string>
-#include <fstream>
 #include <stdexcept>
 
 template<typename T>
@@ -22,10 +22,10 @@ struct Kpoint_data
 	std::vector<Vec3<std::size_t>> gs;
 };
 
-class Wavecar_reader
+class Wavecar_reader : public File_reader
 {
 public:
-	explicit Wavecar_reader(const std::string& filename);
+	Wavecar_reader(const std::string& filename);
 
 	bool is_single_precision() const;
 	bool is_double_precision() const;
@@ -59,16 +59,6 @@ private:
 
 	void seek_record(std::size_t) const;
 
-	// Skips sizeof(T) bytes in the file stream
-	template<typename T>
-	void skip() const;
-
-	template<typename T>
-	void read(T&) const;
-
-	template<typename T>
-	void read(T*, std::size_t n_elements) const;
-
 	// Casts a double to a (positive) integer checking whether
 	// it can be represented as a positive integer
 	static std::size_t to_positive_sizet(double);
@@ -84,7 +74,6 @@ private:
 	static constexpr double double_precision_tag = 45210;
 
 private:
-	mutable std::ifstream file_;
 	std::size_t record_length_;
 
 	std::size_t n_spins_;

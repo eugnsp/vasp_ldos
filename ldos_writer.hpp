@@ -13,17 +13,18 @@ private:
 
 public:
 	Ldos_writer(
-		const std::string& filename,
+		const std::string& filename,		
 		std::size_t n_spins, std::size_t n_kpoints,
 		std::size_t n_bands, std::size_t n_layers,
-		double supercell_height);
+		double supercell_height, double e_fermi,
+		const std::string& user_comment = {});
 
 	void write_ldos(
 		const Vec3& k, const std::vector<double>& energies,
 		const std::vector<double>& occupations,
-		const Matrix<double>& cs_abs_sq);
+		const Matrix<float>& cs_sq);
 
-	void write_minmax_values(double energy_min, double energy_max, double cs_sq_max);
+	void write_minmax_values(double energy_min, double energy_max, float cs_sq_max);
 
 private:
 	template<typename T>

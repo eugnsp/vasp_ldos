@@ -9,7 +9,7 @@
 template<typename T>
 class Fft
 {
-	static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>,
+	static_assert(std::is_same<T, float>::value || std::is_same<T, double>::value,
 				  "Bad data type");
 
 public:
@@ -19,7 +19,7 @@ public:
 	void transform() const;
 
 private:
-	std::conditional_t<std::is_same_v<T, float>,
+	std::conditional_t<std::is_same<T, float>::value,
 		fftwf_plan, fftw_plan> plan_ = nullptr;
 };
 
