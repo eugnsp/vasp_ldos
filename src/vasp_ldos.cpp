@@ -194,10 +194,10 @@ void print_help()
 			  << "    vasp_ldos [options]\n"
 			  << "Options:\n"
 			  << "    -h               print help\n"
-			  << "    -w <name>        input WAVECAR filename\n"
-			  << "    -l <name>        output LDOS filename\n"
-			  << "    -f <value>       Fermi level value\n"
-			  << "    -c <comment>     arbitrary text comment\n\n"
+			  << "    -o <name>        output LDOS filename (no default)\n"
+			  << "    -w <name>        input WAVECAR filename (default: \"WAVECAR\")\n"
+			  << "    -f <value>       Fermi level value (default: 0)\n"
+			  << "    -c <comment>     arbitrary text comment (default: none)\n\n"
 			  << "If no output filename is given, WAVECAR file basic\n"
 			  << "information is displayed and the program terminates." << std::endl;
 }
@@ -220,10 +220,10 @@ int main(int argc, char* argv[])
 		Wavecar_reader reader(wc_filename);
 		print_wavecar_info(reader);
 
-		if (!cl.option_exists("-l"))
+		if (!cl.option_exists("-o"))
 			return 0;
-
-		const std::string output_filename = cl.get_option("-l");
+			
+		const std::string output_filename = cl.get_option("-o");
 		const auto user_comment = cl.get_option_or("-c", "");
 		const double e_fermi = std::stod(cl.get_option_or("-f", "0"));
 

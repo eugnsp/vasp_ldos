@@ -17,10 +17,10 @@ vasp_ldos [options]
 
 Options:
     -h               print help
-    -w <name>        input WAVECAR filename
-    -l <name>        output LDOS filename
-    -f <value>       Fermi level value
-    -c <comment>     arbitrary text comment
+    -o <name>        output LDOS filename (no default)
+    -w <name>        input WAVECAR filename (default: "WAVECAR")
+    -f <value>       Fermi level value (default: 0)
+    -c <comment>     arbitrary text comment (default: none)
 ```
 
 If no output filename is given, WAVECAR file basic information is displayed
@@ -28,18 +28,18 @@ and the program terminates.
 
 ## Output file format
 
-| Data type   |  Description                                       |
-|:------------|:---------------------------------------------------|
-| `char[500]` | Text header tail-padded with spaces                |
-| `uint32`    | File format version (= 103)                        |
-| `uint32`    | Number of spin projection (1 or 2)                 |
-| `uint32`    | Number of k-points                                 |
-| `uint32`    | Number of energy bands                             |
-| `uint32`    | Number of layers                                   |
-| `double`	  | Supercell height	                               |
-| `double`    | Fermi level (`-f` option)			               |
-| `double`    | Minimum value of `E(k)`                            |
-| `double`    | Maximum value of `E(k)`                            |
+| Data type   | Size  |  Description                                       |
+|:------------|:-----:|:---------------------------------------------------|
+| `char[500]` | `500` | Text header tail-padded with spaces                |
+| `uint32`    | `4`   | File format version (= 103)                        |
+| `uint32`    | `4`   | Number of spin projection (1 or 2)                 |
+| `uint32`    | `4`   | Number of k-points                                 |
+| `uint32`    | `4`   | Number of energy bands                             |
+| `uint32`    | `4`   | Number of layers                                   |
+| `double`	  | `8`   | Supercell height	                               |
+| `double`    | `8`   | Fermi level (`-f` option)			               |
+| `double`    | `8`   | Minimum value of `E(k)`                            |
+| `double`    | `8`   | Maximum value of `E(k)`                            |
 
 (to be written)
 
