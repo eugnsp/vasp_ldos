@@ -47,7 +47,7 @@ public:
 	{
 		assert(row < rows_);
 		assert(col < cols_);
-		
+
 		return data_[row + col * rows_];
 	}
 
@@ -69,9 +69,9 @@ public:
 		return data_.data();
 	}
 
-	void zero()
+	void fill(const T& value)
 	{
-		std::fill(data_.begin(), data_.end(), 0);
+		std::fill(data_.begin(), data_.end(), value);
 	}
 
 private:
