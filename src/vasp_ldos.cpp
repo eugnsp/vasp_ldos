@@ -22,9 +22,7 @@
 
 enum class Cell_direction
 {
-	A0,
-	A1,
-	A2
+	A0, A1, A2
 };
 
 struct Fft_size
@@ -55,11 +53,9 @@ double get_height(const Wavecar_reader& wc_reader, Cell_direction dir)
 	case Cell_direction::A1:
 		return wc_reader.a1_norm();
 
-	case Cell_direction::A2:
+	default: // case Cell_direction::A2:
 		return wc_reader.a2_norm();
 	}
-
-	assert(false);
 }
 
 Fft_size get_fft_size(Wavecar_reader& wc_reader, Cell_direction dir)
@@ -72,11 +68,9 @@ Fft_size get_fft_size(Wavecar_reader& wc_reader, Cell_direction dir)
 	case Cell_direction::A1:
 		return {wc_reader.size_g1(), wc_reader.size_g2() * wc_reader.size_g0()};
 
-	case Cell_direction::A2:
+	default: // case Cell_direction::A2:
 		return {wc_reader.size_g2(), wc_reader.size_g0() * wc_reader.size_g1()};
 	}
-
-	assert(false);
 }
 
 template<typename T>
