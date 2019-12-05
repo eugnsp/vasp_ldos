@@ -30,14 +30,14 @@ and the program terminates.
 
 | Data type   | Size  |  Description                                       |
 |:------------|:-----:|:---------------------------------------------------|
-| `char[500]` | `500` | Text header tail-padded with spaces                |
-| `uint32`    | `4`   | File format version (= 103)                        |
-| `uint32`    | `4`   | Number of spin projection (1 or 2)                 |
+| `char[500]` | `500` | Text header (tail-padded with spaces)              |
+| `uint32`    | `4`   | File format version (= `103`)                      |
+| `uint32`    | `4`   | Number of spin projection (`1` or `2`)             |
 | `uint32`    | `4`   | Number of k-points                                 |
 | `uint32`    | `4`   | Number of energy bands                             |
 | `uint32`    | `4`   | Number of layers                                   |
 | `double`	  | `8`   | Supercell height	                               |
-| `double`    | `8`   | Fermi level (`-f` option)			               |
+| `double`    | `8`   | Fermi level (specified by the `-f` option)	       |
 | `double`    | `8`   | Minimum value of `E(k)`                            |
 | `double`    | `8`   | Maximum value of `E(k)`                            |
 

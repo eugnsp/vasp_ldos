@@ -65,34 +65,29 @@ public:
 		return e_cut_;
 	}
 
-	const Vec3<double>& a0() const
+	const Basis3<double>& a() const
 	{
-		return a0_;
+		return a_;
 	}
 
-	const Vec3<double>& a1() const
+	const Basis3<double>& b() const
 	{
-		return a1_;
-	}
-
-	const Vec3<double>& a2() const
-	{
-		return a2_;
+		return b_;
 	}
 
 	double a0_norm() const
 	{
-		return norm(a0_);
+		return norm(a_[0]);
 	}
 
 	double a1_norm() const
 	{
-		return norm(a1_);
+		return norm(a_[1]);
 	}
 
 	double a2_norm() const
 	{
-		return norm(a2_);
+		return norm(a_[2]);
 	}
 
 	std::size_t size_g0() const
@@ -201,17 +196,15 @@ private:
 		n_bands_ = to_positive_sizet(n_bands);
 
 		read(e_cut_);
-		read(a0_);
-		read(a1_);
-		read(a2_);
+		read(a_);
 	}
 
 	void compute_reciprocal()
 	{
-		const auto uc_volume = a0_ * (a1_ ^ a2_);
-		b0_ = 2 * PI / uc_volume * (a1_ ^ a2_);
-		b1_ = 2 * PI / uc_volume * (a2_ ^ a0_);
-		b2_ = 2 * PI / uc_volume * (a0_ ^ a1_);
+		const auto uc_volume = a_[0] * (a_[1] ^ a_[2]);
+		b_[0] = 2 * PI / uc_volume * (a_[1] ^ a_[2]);
+		b_[1] = 2 * PI / uc_volume * (a_[2] ^ a_[0]);
+		b_[2] = 2 * PI / uc_volume * (a_[0] ^ a_[1]);
 
 		const double g_max_over_2pi = std::sqrt(TWO_M_OVER_HBAR_SQ * e_cut_) / (2 * PI);
 
@@ -229,15 +222,15 @@ private:
 		for (std::size_t i2 = 0; i2 < size_g2(); ++i2)
 		{
 			const auto i2s = index_shift(i2, max_g2_);
-			const auto g2 = (k[2] + i2s) * b2_;
+			const auto g2 = (k[2] + i2s) * b_[2];
 			for (std::size_t i1 = 0; i1 < size_g1(); ++i1)
 			{
 				const auto i1s = index_shift(i1, max_g1_);
-				const auto g2_p_g1 = g2 + (k[1] + i1s) * b1_;
+				const auto g2_p_g1 = g2 + (k[1] + i1s) * b_[1];
 				for (std::size_t i0 = 0; i0 < size_g0(); ++i0)
 				{
 					const auto i0s = index_shift(i0, max_g0_);
-					const auto g = g2_p_g1 + (k[0] + i0s) * b0_;
+					const auto g = g2_p_g1 + (k[0] + i0s) * b_[0];
 					const auto norm_g_sq = norm_sq(g);
 					if (norm_g_sq < two_m_e_cut_over_hbar_sq)
 						gs.push_back({i0, i1, i2});
@@ -289,8 +282,8 @@ private:
 	std::size_t max_g2_;
 
 	double e_cut_;
-	Vec3<double> a0_, a1_, a2_;		// Direct lattice
-	Vec3<double> b0_, b1_, b2_;		// Reciprocal lattice
+	Basis3<double> a_;		// Direct lattice
+	Basis3<double> b_;		// Reciprocal lattice
 
 	Precision precision_;
 

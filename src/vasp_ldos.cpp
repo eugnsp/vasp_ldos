@@ -166,26 +166,22 @@ void process(Wavecar_reader& reader, Ldos_writer& writer, Cell_direction dir)
 	std::cout << std::endl;
 }
 
-void print_wavecar_info(const Wavecar_reader& wavecar_reader)
+void print_wavecar_info(const Wavecar_reader& reader)
 {
 	std::cout << "WAVECAR file:\n"
-			  << "Precision: " << (wavecar_reader.is_single_precision() ? "single" : "double")
-			  << '\n'
-			  << "Number of spin components: " << wavecar_reader.n_spins() << '\n'
-			  << "Number of k-points: " << wavecar_reader.n_kpoints() << '\n'
-			  << "Number of bands: " << wavecar_reader.n_bands() << '\n'
-			  << "Cut-off energy: " << wavecar_reader.e_cut() << " eV\n\n"
+			  << "Precision: " << (reader.is_single_precision() ? "single" : "double") << '\n'
+			  << "Number of spin components: " << reader.n_spins() << '\n'
+			  << "Number of k-points: " << reader.n_kpoints() << '\n'
+			  << "Number of bands: " << reader.n_bands() << '\n'
+			  << "Cut-off energy: " << reader.e_cut() << " eV\n\n"
 
 			  << std::fixed << std::setprecision(5) << "Direct lattice:\n"
-			  << " a1 = (" << wavecar_reader.a0()[0] << ", " << wavecar_reader.a0()[1] << ", "
-			  << wavecar_reader.a0()[2] << ") Ang\n"
-			  << " a2 = (" << wavecar_reader.a1()[0] << ", " << wavecar_reader.a1()[1] << ", "
-			  << wavecar_reader.a1()[2] << ") Ang\n"
-			  << " a3 = (" << wavecar_reader.a2()[0] << ", " << wavecar_reader.a2()[1] << ", "
-			  << wavecar_reader.a2()[2] << ") Ang\n\n"
+			  << " a1 = " << reader.a()[0] << " Ang\n"
+			  << " a2 = " << reader.a()[1] << " Ang\n"
+			  << " a3 = " << reader.a()[2] << " Ang\n\n"
 
-			  << "G-lattice size: " << wavecar_reader.size_g0() << " x "
-			  << wavecar_reader.size_g1() << " x " << wavecar_reader.size_g2() << '\n' << std::endl;
+			  << "G-lattice size: " << reader.size_g0() << " x "
+			  << reader.size_g1() << " x " << reader.size_g2() << '\n' << std::endl;
 }
 
 void print_help()
@@ -222,15 +218,14 @@ int main(int argc, char* argv[])
 
 		if (!cl.option_exists("-o"))
 			return 0;
-			
+
 		const std::string output_filename = cl.get_option("-o");
 		const auto user_comment = cl.get_option_or("-c", "");
-		const double e_fermi = std::stod(cl.get_option_or("-f", "0"));
+		const double fermi_energy = std::stod(cl.get_option_or("-f", "0"));
 
 		const auto cell_direction = get_direction(reader);
-		Ldos_writer writer(output_filename, reader.n_spins(), reader.n_kpoints(),
-			reader.n_bands(), get_fft_size(reader, cell_direction).size,
-			get_height(reader, cell_direction), e_fermi, user_comment);
+		Ldos_writer writer(output_filename, reader, get_fft_size(reader, cell_direction).size,
+			get_height(reader, cell_direction), fermi_energy, user_comment);
 
 		if (reader.is_single_precision())
 			process<float>(reader, writer, cell_direction);

@@ -1,6 +1,7 @@
 #pragma once
 #include "matrix.hpp"
 #include "vec3.hpp"
+#include "wavecar_reader.hpp"
 
 #include <cassert>
 #include <chrono>
@@ -16,16 +17,14 @@
 class Ldos_writer
 {
 public:
-	Ldos_writer(const std::string& filename,
-				std::size_t n_spins, std::size_t n_kpoints,
-				std::size_t n_bands, std::size_t n_layers,
-				double supercell_height, double fermi_energy,
+	Ldos_writer(const std::string& filename, const Wavecar_reader& reader,
+				std::size_t n_layers, double supercell_height, double fermi_energy,
 				const std::string& user_comment)
-		: n_bands_(n_bands), n_layers_(n_layers)
+		: n_bands_(reader.n_bands()), n_layers_(n_layers)
 	{
-		assert(n_spins > 0);
-		assert(n_kpoints > 0);
-		assert(n_bands > 0);
+		assert(reader.n_spins() > 0);
+		assert(reader.n_kpoints() > 0);
+		assert(reader.n_bands() > 0);
 		assert(n_layers > 0);
 
 		file_.exceptions(std::ofstream::failbit | std::ofstream::badbit);
@@ -33,9 +32,10 @@ public:
 
 		const std::size_t header_length = 500;
 		std::string header("Depth-k resolved DOS data file, created on: ");
-		header += date_time_string() + "; ";
-		header += std::to_string(n_kpoints) + " k points, " +
-			std::to_string(n_bands) + " bands, " + std::to_string(n_layers) + " layers";
+		header += date_time_string() + "; " +
+			std::to_string(reader.n_kpoints()) + " k points, " +
+			std::to_string(reader.n_bands()) + " bands, " +
+			std::to_string(n_layers) + " layers";
 
 		if (!user_comment.empty())
 			header += "; Comment: " + user_comment;
@@ -46,9 +46,12 @@ public:
 		const std::uint32_t file_format_version = 103;
 		write(file_format_version);
 
-		write(static_cast<std::uint32_t>(n_spins));
-		write(static_cast<std::uint32_t>(n_kpoints));
-		write(static_cast<std::uint32_t>(n_bands));
+		write(reader.a());
+		write(reader.b());
+
+		write(static_cast<std::uint32_t>(reader.n_spins()));
+		write(static_cast<std::uint32_t>(reader.n_kpoints()));
+		write(static_cast<std::uint32_t>(reader.n_bands()));
 		write(static_cast<std::uint32_t>(n_layers));
 		write(supercell_height);
 		write(fermi_energy);
