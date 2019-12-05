@@ -5,6 +5,7 @@
 #include "wavecar_reader.hpp"
 #include "outcar_reader.hpp"
 #include "ldos_writer.hpp"
+
 #include <cstddef>
 #include <utility>
 #include <limits>
@@ -17,12 +18,6 @@
 #include <exception>
 #include <stdexcept>
 #include <cassert>
-
-template<typename T, typename... Args>
-std::unique_ptr<T> my_make_unique(Args&&... args)
-{
-	return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-}
 
 class App
 {
@@ -79,11 +74,11 @@ void App::run()
 	}
 
 	const std::string outcar_filename = cl.get_option("-o", "OUTCAR");
-	outcar_reader_ = my_make_unique<Outcar_reader>(outcar_filename);
+	outcar_reader_ = std::make_unique<Outcar_reader>(outcar_filename);
 	print_outcar_info();
 
 	const std::string wavecar_filename = cl.get_option("-w", "WAVECAR");
-	wavecar_reader_ = my_make_unique<Wavecar_reader>(wavecar_filename);
+	wavecar_reader_ = std::make_unique<Wavecar_reader>(wavecar_filename);
 	print_wavecar_info();
 
 	if (!cl.option_exists("-l"))
@@ -103,7 +98,7 @@ void App::run()
 	if (cl.option_exists("-c"))
 		user_comment = cl.get_option("-c");
 
-	writer_ = my_make_unique<Ldos_writer>(
+	writer_ = std::make_unique<Ldos_writer>(
 		ldos_filename, wavecar_reader_->n_spins(), wavecar_reader_->n_kpoints(),
 		wavecar_reader_->n_bands(), get_fft_size().size, get_height(), outcar_reader_->fermi_energy(),
 		user_comment);
