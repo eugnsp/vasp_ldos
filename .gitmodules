@@ -1,0 +1,3 @@
+[submodule "external/findFFTW"]
+	path = external/findFFTW
+	url = https://github.com/egpbos/findFFTW
